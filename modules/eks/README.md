@@ -116,7 +116,7 @@ it at `0.0.0.0/0`.
 ## Requirements
 
 | Name | Version |
-| ---- | ------- |
+|------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 5.0 |
 | <a name="requirement_tls"></a> [tls](#requirement\_tls) | ~> 4.0 |
@@ -124,7 +124,7 @@ it at `0.0.0.0/0`.
 ## Providers
 
 | Name | Version |
-| ---- | ------- |
+|------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 5.0 |
 | <a name="provider_tls"></a> [tls](#provider\_tls) | ~> 4.0 |
 
@@ -135,7 +135,7 @@ No modules.
 ## Resources
 
 | Name | Type |
-| ---- | ---- |
+|------|------|
 | [aws_cloudwatch_log_group.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_group) | resource |
 | [aws_eks_addon.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
 | [aws_eks_cluster.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_cluster) | resource |
@@ -167,7 +167,7 @@ No modules.
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-| ---- | ----------- | ---- | ------- | :------: |
+|------|-------------|------|---------|:--------:|
 | <a name="input_authentication_mode"></a> [authentication\_mode](#input\_authentication\_mode) | Cluster access management mode: API, API\_AND\_CONFIG\_MAP or CONFIG\_MAP. API is the modern default and enables EKS access entries. | `string` | `"API_AND_CONFIG_MAP"` | no |
 | <a name="input_bootstrap_cluster_creator_admin_permissions"></a> [bootstrap\_cluster\_creator\_admin\_permissions](#input\_bootstrap\_cluster\_creator\_admin\_permissions) | Grant the IAM principal running Terraform cluster-admin via an access entry. | `bool` | `true` | no |
 | <a name="input_cluster_addons"></a> [cluster\_addons](#input\_cluster\_addons) | EKS managed addons, keyed by addon name (vpc-cni, coredns, kube-proxy, aws-ebs-csi-driver, ...).<br/>Each entry supports `addon_version`, `service_account_role_arn`, `configuration_values`,<br/>`resolve_conflicts_on_create` and `resolve_conflicts_on_update`. Leave `addon_version` null<br/>to let EKS pick the default version for the cluster's Kubernetes release. | <pre>map(object({<br/>    addon_version               = optional(string)<br/>    service_account_role_arn    = optional(string)<br/>    configuration_values        = optional(string)<br/>    resolve_conflicts_on_create = optional(string, "OVERWRITE")<br/>    resolve_conflicts_on_update = optional(string, "OVERWRITE")<br/>    preserve                    = optional(bool, true)<br/>  }))</pre> | <pre>{<br/>  "coredns": {},<br/>  "kube-proxy": {},<br/>  "vpc-cni": {}<br/>}</pre> | no |
@@ -192,7 +192,7 @@ No modules.
 ## Outputs
 
 | Name | Description |
-| ---- | ----------- |
+|------|-------------|
 | <a name="output_cluster_addon_versions"></a> [cluster\_addon\_versions](#output\_cluster\_addon\_versions) | Resolved versions of the installed EKS addons, keyed by addon name. |
 | <a name="output_cluster_arn"></a> [cluster\_arn](#output\_cluster\_arn) | ARN of the EKS cluster. |
 | <a name="output_cluster_certificate_authority_data"></a> [cluster\_certificate\_authority\_data](#output\_cluster\_certificate\_authority\_data) | Base64-encoded CA certificate for the cluster. Feed this to the kubernetes/helm providers or kubeconfig. |

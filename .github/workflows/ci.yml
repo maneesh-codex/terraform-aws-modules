@@ -98,7 +98,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Check module docs are up to date
-        uses: terraform-docs/gh-actions@v1
+        uses: terraform-docs/gh-actions@v1.4.1
         with:
           working-dir: modules/vpc,modules/eks,modules/rds-postgres,modules/s3-bucket,modules/iam-irsa-role
           output-file: README.md
