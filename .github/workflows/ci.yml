@@ -1,0 +1,106 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  TERRAFORM_VERSION: "1.9.8"
+  TFLINT_VERSION: "v0.53.0"
+
+jobs:
+  fmt:
+    name: terraform fmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      - name: Check formatting
+        run: terraform fmt -check -recursive -diff
+
+  validate:
+    name: validate (${{ matrix.dir }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dir:
+          - modules/vpc
+          - modules/eks
+          - modules/rds-postgres
+          - modules/s3-bucket
+          - modules/iam-irsa-role
+          - examples/eks-platform
+          - examples/secure-data-platform
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.terraform.d/plugin-cache
+          key: ${{ runner.os }}-tf-plugins-${{ hashFiles('**/versions.tf') }}
+          restore-keys: ${{ runner.os }}-tf-plugins-
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      - name: Enable provider plugin cache
+        run: |
+          mkdir -p ~/.terraform.d/plugin-cache
+          echo 'TF_PLUGIN_CACHE_DIR=~/.terraform.d/plugin-cache' >> "$GITHUB_ENV"
+
+      - name: terraform init
+        working-directory: ${{ matrix.dir }}
+        run: terraform init -backend=false -input=false -no-color
+
+      - name: terraform validate
+        working-directory: ${{ matrix.dir }}
+        run: terraform validate -no-color
+
+  tflint:
+    name: tflint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: ${{ env.TFLINT_VERSION }}
+
+      - name: Show version
+        run: tflint --version
+
+      - name: Init tflint
+        run: tflint --init
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run tflint
+        run: tflint --recursive --format compact
+
+  docs:
+    name: terraform-docs drift
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check module docs are up to date
+        uses: terraform-docs/gh-actions@v1
+        with:
+          working-dir: modules/vpc,modules/eks,modules/rds-postgres,modules/s3-bucket,modules/iam-irsa-role
+          output-file: README.md
+          output-method: inject
+          fail-on-diff: true
